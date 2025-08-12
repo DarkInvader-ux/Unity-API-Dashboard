@@ -425,6 +425,16 @@
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.26f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.Properties.SourceGenerator.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.26f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 -analyzer:"C:/Program Files/Unity/Hub/Editor/6000.0.26f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.UIToolkit.SourceGenerator.dll"
+"Assets/Scripts/Core/Components/EventsApiClient.cs"
+"Assets/Scripts/Core/Configuration/ApiConfiguration.cs"
+"Assets/Scripts/Core/Interfaces/IEventsService.cs"
+"Assets/Scripts/Core/Interfaces/IHttpClient.cs"
+"Assets/Scripts/Core/Interfaces/ILogger.cs"
+"Assets/Scripts/Core/Models/HttpModels.cs"
+"Assets/Scripts/Core/Services/Events/EventService.cs"
+"Assets/Scripts/Core/Services/Events/UnityConsoleLogger.cs"
+"Assets/Scripts/Core/Services/UnityHttpClient.cs"
+"Assets/Scripts/Core/Testing/ApiTestRunner.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0
 /deterministic
