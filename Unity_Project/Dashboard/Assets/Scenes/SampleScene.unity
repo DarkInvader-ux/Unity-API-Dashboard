@@ -309,6 +309,8 @@ MonoBehaviour:
   enableDebugLogs: 1
   stressTestEventCount: 5
   stressTestDelay: 0.2
+  gameDataConfig: {fileID: 11400000, guid: 0821daf7c1cc8274c9c428b5975eb088, type: 2}
+  gameEventDto: {fileID: 11400000, guid: f2d6c251b029b454a8aa455b4aa60222, type: 2}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

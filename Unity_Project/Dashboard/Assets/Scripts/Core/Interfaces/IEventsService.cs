@@ -1,4 +1,5 @@
 using System.Collections;
+using Core.Models;
 
 namespace Core.Interfaces
 {
@@ -12,7 +13,7 @@ namespace Core.Interfaces
         /// </summary>
         /// <param name="eventName">Name of the event to post</param>
         /// <returns>Coroutine for async execution</returns>
-        IEnumerator PostEvent(string eventName);
+        IEnumerator PostEvent(GameEventDto eventName);
         
         /// <summary>
         /// Retrieves all events from the API

@@ -33,21 +33,22 @@ namespace Core.Services.Events
         /// </summary>
         /// <param name="eventName">Name of the event to post</param>
         /// <returns>Coroutine for async execution</returns>
-        public IEnumerator PostEvent(string eventName)
+        public IEnumerator PostEvent(GameEventDto gameEventDto)
         {
-            if (string.IsNullOrEmpty(eventName))
+            Debug.LogWarning($"player name is {gameEventDto.playerId}");
+            if (gameEventDto == null)
             {
-                logger.LogError("Event name cannot be null or empty");
+                logger.LogError("Event data cannot be null");
                 yield break;
             }
 
-            var request = new HttpRequest<string>
+            var request = new HttpRequest<GameEventDto>
             {
                 Url = config.EventsUrl,
                 Method = HttpMethod.POST,
-                Data = eventName,
-                OnComplete = response => OnEventPosted(eventName, response),
-                OnError = error => logger.LogError($"Failed to post event '{eventName}': {error}")
+                Data = gameEventDto,
+                OnComplete = response => OnEventPosted(gameEventDto.eventType, response),
+                OnError = error => logger.LogError($"Failed to post event '{gameEventDto.eventType}': {error}")
             };
 
             yield return httpClient.SendRequest(request);

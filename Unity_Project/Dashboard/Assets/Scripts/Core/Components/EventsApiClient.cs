@@ -1,5 +1,8 @@
+using System.Collections;
+using System.Collections.Generic;
 using Core.Configuration;
 using Core.Interfaces;
+using Core.Models;
 using Core.Services;
 using Core.Services.Events;
 using Core.Testing;
@@ -13,7 +16,7 @@ namespace Core.Components
     /// Main Unity component for Events API integration
     /// Serves as the composition root and public interface
     /// </summary>
-    public class EventsAPIClient : MonoBehaviour
+    public class EventsApiClient : MonoBehaviour
     {
         [Header("Configuration")]
         [SerializeField] private ApiConfiguration apiConfig = new ApiConfiguration();
@@ -26,6 +29,13 @@ namespace Core.Components
         [Header("Advanced Test Settings")]
         [SerializeField] private int stressTestEventCount = 5;
         [SerializeField] private float stressTestDelay = 0.2f;
+        
+        [Header("Game Data")]
+        [SerializeField] private GameDataConfig gameDataConfig;
+        
+        [Header("Game Event Data")]
+        [SerializeField] private GameEventDataSo gameEventDto;
+
 
         // Dependencies (injected via composition)
         private ILogger logger;
@@ -50,13 +60,13 @@ namespace Core.Components
         {
             if (testOnStart)
             {
-                StartCoroutine(testRunner.RunFullTest(testEventName));
+                StartCoroutine(testRunner.RunFullTest(gameEventDto.ToDto()));
             }
         }
 
         void Update()
         {
-            HandleInput();
+            //HandleInput();
         }
 
         #endregion
@@ -110,7 +120,7 @@ namespace Core.Components
             if (Input.GetKeyDown(KeyCode.T))
             {
                 logger.Log("Manual full test triggered (T key)");
-                StartCoroutine(testRunner.RunFullTest(testEventName));
+                StartCoroutine(testRunner.RunFullTest(gameEventDto.ToDto()));
             }
 
             if (Input.GetKeyDown(KeyCode.S))
@@ -151,7 +161,7 @@ namespace Core.Components
         /// </summary>
         public void RunFullTestFromUI() 
         {
-            StartCoroutine(testRunner.RunFullTest(testEventName));
+            StartCoroutine(testRunner.RunFullTest(gameEventDto.ToDto()));
         }
 
         /// <summary>
@@ -166,16 +176,18 @@ namespace Core.Components
         /// Posts a custom event (for future gesture integration)
         /// </summary>
         /// <param name="eventName">Name of the event to post</param>
-        public void PostCustomEvent(string eventName) 
+        public void PostCustomGameData()
         {
-            if (string.IsNullOrEmpty(eventName))
+            if (gameDataConfig == null)
             {
-                logger.LogError("Cannot post custom event: event name is null or empty");
+                logger.LogError("No GameDataConfig assigned.");
                 return;
             }
 
-            StartCoroutine(eventsService.PostEvent(eventName));
+            var dto = gameDataConfig.GameDataDto();
+            //StartCoroutine(eventsService.PostGameData(dto)); 
         }
+
 
         /// <summary>
         /// Posts a custom event with additional metadata
@@ -188,8 +200,13 @@ namespace Core.Components
                 ? eventName 
                 : $"{eventName} | {metadata}";
             
-            PostCustomEvent(fullEventName);
+            //PostCustomEvent(fullEventName);
         }
+        // public IEnumerator PostGameData(GameDataDTO gameData)
+        // {
+        //     var json = JsonUtility.ToJson(gameData);
+        //     yield return httpClient.Post(apiConfig.EventsUrl, json, "application/json");
+        // }
 
         #endregion
 

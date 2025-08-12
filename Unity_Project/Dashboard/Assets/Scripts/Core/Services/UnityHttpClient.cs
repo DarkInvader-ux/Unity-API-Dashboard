@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using Core.Interfaces;
 using Core.Models;
-using UnityEngine;
+using Newtonsoft.Json;
 using UnityEngine.Networking;
 using ILogger = Core.Interfaces.ILogger;
 
@@ -37,7 +37,7 @@ namespace Core.Services
         {
             if (request == null) 
                 throw new ArgumentNullException(nameof(request));
-
+            
             logger.Log($"Sending {request.Method} request to: {request.Url}");
 
             yield return request.Method switch
@@ -133,12 +133,7 @@ namespace Core.Services
         /// </summary>
         private string SerializeData<T>(T data)
         {
-            return data switch
-            {
-                string str => $"\"{str}\"",
-                null => "null",
-                _ => JsonUtility.ToJson(data)
-            };
+            return JsonConvert.SerializeObject(data);
         }
     }
 }
