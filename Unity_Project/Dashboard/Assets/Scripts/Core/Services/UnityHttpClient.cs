@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
-using Core.Interfaces;
+using Core.Interfaces.Api;
 using Core.Models;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
-using ILogger = Core.Interfaces.ILogger;
+using ILogger = Core.Interfaces.Api.ILogger;
+using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
@@ -123,10 +124,34 @@ namespace Core.Services
             }
             else
             {
+                // Log additional details for 4xx/5xx errors
                 logger.LogError($"Request failed. Status: {response.StatusCode}, Error: {response.Error}");
-                request.OnError?.Invoke(response.Error);
+        
+                if (!string.IsNullOrWhiteSpace(response.ResponseText))
+                {
+                    logger.LogError($"Server error details: {response.ResponseText}");
+                }
+
+                // Specific case: Bad Request// Add at top
+
+                if (response.StatusCode == 400)
+                {
+                    try
+                    {
+                        var errorDetails = JObject.Parse(response.ResponseText);
+                        logger.LogError($"400 Bad Request details:\n{errorDetails.ToString()}");
+                    }
+                    catch
+                    {
+                        logger.LogError("Could not parse 400 response as JSON. Raw body:\n" + response.ResponseText);
+                    }
+                }
+
+
+                request.OnError?.Invoke(response.Error ?? response.ResponseText);
             }
         }
+
 
         /// <summary>
         /// Serializes request data to JSON

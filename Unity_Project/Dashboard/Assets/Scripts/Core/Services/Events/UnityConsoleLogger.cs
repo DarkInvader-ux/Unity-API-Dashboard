@@ -1,12 +1,13 @@
 using UnityEngine;
-using ILogger = Core.Interfaces.ILogger;
+using Api_ILogger = Core.Interfaces.Api.ILogger;
+using ILogger = Core.Interfaces.Api.ILogger;
 
 namespace Core.Services.Events
 {
     /// <summary>
     /// Unity console implementation of ILogger
     /// </summary>
-    public class UnityConsoleLogger : ILogger
+    public class UnityConsoleLogger : Api_ILogger
     {
         private readonly string prefix;
         private readonly bool enableLogging;

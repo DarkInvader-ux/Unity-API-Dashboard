@@ -1,10 +1,13 @@
 using System;
 using System.Collections;
 using Core.Configuration;
+using Core.Configuration.Api;
+using Core.Data;
 using Core.Interfaces;
+using Core.Interfaces.Api;
 using Core.Models;
 using UnityEngine;
-using ILogger = Core.Interfaces.ILogger;
+using ILogger = Core.Interfaces.Api.ILogger;
 
 namespace Core.Services.Events
 {
@@ -35,7 +38,6 @@ namespace Core.Services.Events
         /// <returns>Coroutine for async execution</returns>
         public IEnumerator PostEvent(GameEventDto gameEventDto)
         {
-            Debug.LogWarning($"player name is {gameEventDto.playerId}");
             if (gameEventDto == null)
             {
                 logger.LogError("Event data cannot be null");

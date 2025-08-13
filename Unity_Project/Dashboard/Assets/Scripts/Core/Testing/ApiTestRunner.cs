@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
+using Core.Data;
 using Core.Interfaces;
-using Core.Models; // ✅ Make sure GameEventDto is here
+using Core.Models; 
 using UnityEngine;
-using ILogger = Core.Interfaces.ILogger;
+using ILogger = Core.Interfaces.Api.ILogger;
 
 namespace Core.Testing
 {
