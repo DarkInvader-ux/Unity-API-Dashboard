@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40b0bd76345b1a745b4934e1e73caeba, type: 3}
+  m_Name: TargetSpawnConfig
+  m_EditorClassIdentifier: 
+  spawnInterval: 2
+  maxActiveTargets: 5
+  areaCenter: {x: 0, y: 0, z: 0}
+  areaSize: {x: 10, y: 10, z: 10}
+  targetPrefab: {fileID: 2449497933224846166, guid: e118b60b9741b434085e89b782f90c4c, type: 3}

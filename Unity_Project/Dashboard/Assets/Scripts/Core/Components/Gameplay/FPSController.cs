@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Core.Controllers;
+using Core.Controllers.Gameplay;
 using Core.Interfaces;
 using UnityEngine;
 
-namespace Core.Components
+namespace Core.Components.Gameplay
 {
     [RequireComponent(typeof(CharacterController))]
     public class FPSController : MonoBehaviour
@@ -28,7 +29,8 @@ namespace Core.Components
             // Adding subsystems (Open/Closed Principle)
             controllers.Add(new MovementController());
             controllers.Add(new LookController());
-
+            controllers.Add(new ShootController());
+            
             // Initialize all controllers
             foreach (var controller in controllers)
             {

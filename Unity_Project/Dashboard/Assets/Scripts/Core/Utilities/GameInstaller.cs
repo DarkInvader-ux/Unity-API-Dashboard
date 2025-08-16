@@ -1,7 +1,7 @@
 using Core.Components.Gameplay;
-using Core.Configuration;
 using Core.Configuration.Api;
 using Core.Controllers.Gameplay;
+using Core.Data;
 using Core.Interfaces;
 using Core.Interfaces.Api;
 using Core.Interfaces.Gameplay;
@@ -22,6 +22,7 @@ namespace Core.Utilities
         {
             InstallInfrastructure();
             InstallGameplay();
+
         }
 
         private void InstallInfrastructure()
@@ -38,8 +39,14 @@ namespace Core.Utilities
 
         private void InstallGameplay()
         {
-            Container.Bind<ITargetHitHandler>().To<TargetHitHandler>().AsSingle();
+            Container.Bind<TargetSpawnConfig>()
+                .FromScriptableObjectResource("Configs/TargetSpawnConfig") // Put your SO in Resources/Configs
+                .AsSingle();
 
+            Container.BindFactory<Target, Target.Factory>()
+                .FromComponentInNewPrefabResource("Prefabs/Target"); // Put Target prefab in Resources/Prefabs
+            Container.Bind<ITargetHitHandler>().To<TargetHitHandler>().AsSingle();
+            Container.BindInterfacesAndSelfTo<TargetSpawner>().AsSingle().NonLazy();
             foreach (var target in FindObjectsOfType<Target>())
             {
                 Container.QueueForInject(target);

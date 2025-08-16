@@ -16,22 +16,20 @@ namespace Core.Components.Gameplay
         [Inject]
         private ITargetHitHandler hitHandler;
 
+        public event Action OnDestroyed;
 
+        public class Factory : PlaceholderFactory<Target> { }
+
+        private void OnDestroy()
+        {
+            OnDestroyed?.Invoke();
+        }
         private void Awake()
         {
             Position = transform.position;
         }
 
         public Vector3 Position { get; set; }
-        
-        // modify according to shooting
-        private void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject.TryGetComponent(out FPSController fpsController))
-            {
-                OnHit();
-            }
-        }
 
         public void OnHit()
         {
