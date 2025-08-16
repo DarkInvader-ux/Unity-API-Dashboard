@@ -3,6 +3,7 @@ using Core.Components.Gameplay;
 using Core.Data;
 using Core.Gameplay;
 using Core.Interfaces.Gameplay;
+using Core.Utilities;
 using UnityEngine;
 using Zenject;
 
@@ -18,14 +19,34 @@ namespace Core.Services
         private Coroutine _spawnCoroutine;
         private int _activeTargetCount;
 
+        private readonly TargetPool _targetPool;
+
         [Inject]
-        public TargetSpawner(CoroutineRunner coroutineRunner, TargetSpawnConfig config, Target.Factory targetFactory, IScoreManager scoreManager)
+        public TargetSpawner(CoroutineRunner coroutineRunner, TargetSpawnConfig config, TargetPool targetPool, IScoreManager scoreManager)
         {
             _coroutineRunner = coroutineRunner;
             _config = config;
-            _targetFactory = targetFactory;
+            _targetPool = targetPool;
             _scoreManager = scoreManager;
         }
+
+        private void SpawnTarget()
+        {
+            Vector3 spawnPos = GetRandomPosition();
+            Target target = _targetPool.Spawn(spawnPos);
+
+            if (target.TryGetComponent<TargetHealth>(out var targetHealth))
+            {
+                _scoreManager.RegisterTarget(targetHealth);
+                _activeTargetCount++;
+                target.OnDestroyed += () => 
+                {
+                    _targetPool.Despawn(target);
+                    _activeTargetCount--;
+                };
+            }
+        }
+
         
         
 
@@ -52,21 +73,6 @@ namespace Core.Services
                     SpawnTarget();
                 }
                 yield return new WaitForSeconds(_config.spawnInterval);
-            }
-        }
-
-        private void SpawnTarget()
-        {
-            Vector3 spawnPos = GetRandomPosition();
-            Target target = _targetFactory.Create();
-            target.transform.position = spawnPos;
-            _activeTargetCount++;
-
-            target.OnDestroyed += () => _activeTargetCount--; // Listen for destruction
-            if (target.TryGetComponent<TargetHealth>(out var targetHealth))
-            {
-                _scoreManager.RegisterTarget(targetHealth);
-                targetHealth.OnDeath += () => _activeTargetCount--;
             }
         }
 

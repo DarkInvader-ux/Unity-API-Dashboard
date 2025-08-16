@@ -10,23 +10,21 @@ namespace Core.Controllers.Gameplay
 {
     public class TargetHitHandler : ITargetHitHandler
     {
-        private readonly IEventsService eventsService;
-        private readonly ILogger logger;
+        private readonly IEventsService _eventsService;
+        private readonly ILogger _logger;
         
         [Inject]
-        private CoroutineRunner coroutineRunner;
+        private CoroutineRunner _coroutineRunner;
 
-        public TargetHitHandler(
-            IEventsService eventsService,
-            ILogger logger)
+        public TargetHitHandler(IEventsService eventsService, ILogger logger)
         {
-            this.eventsService = eventsService;
-            this.logger = logger;
+            _eventsService = eventsService;
+            _logger = logger;
         }
 
         public void HandleTargetHit(ITarget target, GameEventDto gameEvent)
         {
-            coroutineRunner.RunCoroutine(eventsService.PostEvent(gameEvent));
+            _coroutineRunner.RunCoroutine(_eventsService.PostEvent(gameEvent));
         }
     }
 

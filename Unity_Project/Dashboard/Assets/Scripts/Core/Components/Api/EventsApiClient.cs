@@ -6,15 +6,12 @@ using Core.Services;
 using Core.Services.Events;
 using Core.Testing;
 using UnityEngine;
+using Zenject;
 using IEventsService = Core.Interfaces.IEventsService;
 using ILogger = Core.Interfaces.Api.ILogger;
 
 namespace Core.Components.Api
 {
-    /// <summary>
-    /// Main Unity component for Events API integration
-    /// Serves as the composition root and public interface
-    /// </summary>
     public class EventsApiClient : MonoBehaviour
     {
         [Header("Configuration")]
@@ -34,31 +31,25 @@ namespace Core.Components.Api
         [Header("Game Event Data")]
         [SerializeField] private GameEventDataSo gameEventDto;
 
-
-        // Dependencies (injected via composition)
-        private ILogger logger;
-        private IHttpClient httpClient;
-        private IEventsService eventsService;
-        private ApiTestRunner testRunner;
-
-        // Properties for external access
-        public ApiConfiguration Config => apiConfig;
-        public IEventsService EventsService => eventsService;
-        public ApiTestRunner TestRunner => testRunner;
-
-        #region Unity Lifecycle
-
-        void Awake()
+        private ILogger _logger;
+        private IHttpClient _httpClient;
+        private IEventsService _eventsService;
+        private ApiTestRunner _testRunner;
+        [Inject]
+        public void Construct(ILogger logger, IHttpClient httpClient, IEventsService eventsService)
         {
-            InitializeDependencies();
-            LogInitialization();
+            _logger = logger;
+            _httpClient = httpClient;
+            _eventsService = eventsService;
+            _testRunner = new ApiTestRunner(_eventsService, _logger);
         }
 
+        #region Monobehaviour
         void Start()
         {
             if (testOnStart)
             {
-                StartCoroutine(testRunner.RunFullTest(gameEventDto.ToDto()));
+                StartCoroutine(_testRunner.RunFullTest(gameEventDto.ToDto()));
             }
         }
 
@@ -66,36 +57,8 @@ namespace Core.Components.Api
         {
             //HandleInput();
         }
-
         #endregion
-
-        #region Dependency Injection
         
-        /// <summary>
-        /// Initializes all dependencies following dependency injection pattern
-        /// </summary>
-        private void InitializeDependencies()
-        {
-            // Create dependencies in proper order (dependencies first)
-            logger = new UnityConsoleLogger("[EventsAPI]", enableDebugLogs);
-            httpClient = new UnityHttpClient(logger);
-            eventsService = new EventsService(httpClient, apiConfig, logger);
-            testRunner = new ApiTestRunner(eventsService, logger);
-        }
-
-        /// <summary>
-        /// Logs initialization information
-        /// </summary>
-        private void LogInitialization()
-        {
-            logger.Log($"EventsAPIClient initialized");
-            logger.Log($"API URL: {apiConfig.EventsUrl}");
-            logger.Log($"Debug logging: {(enableDebugLogs ? "Enabled" : "Disabled")}");
-            logger.Log($"Test on start: {(testOnStart ? "Enabled" : "Disabled")}");
-        }
-
-        #endregion
-
         #region Input Handling
         
         /// <summary>
@@ -105,32 +68,32 @@ namespace Core.Components.Api
         {
             if (Input.GetKeyDown(KeyCode.P))
             {
-                logger.Log("Manual POST test triggered (P key)");
-                StartCoroutine(testRunner.PostTestEvent());
+                _logger.Log("Manual POST test triggered (P key)");
+                StartCoroutine(_testRunner.PostTestEvent());
             }
             
             if (Input.GetKeyDown(KeyCode.G))
             {
-                logger.Log("Manual GET test triggered (G key)");
-                StartCoroutine(testRunner.GetAllEvents());
+                _logger.Log("Manual GET test triggered (G key)");
+                StartCoroutine(_testRunner.GetAllEvents());
             }
             
             if (Input.GetKeyDown(KeyCode.T))
             {
-                logger.Log("Manual full test triggered (T key)");
-                StartCoroutine(testRunner.RunFullTest(gameEventDto.ToDto()));
+                _logger.Log("Manual full test triggered (T key)");
+                StartCoroutine(_testRunner.RunFullTest(gameEventDto.ToDto()));
             }
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                logger.Log("Stress test triggered (S key)");
-                StartCoroutine(testRunner.RunStressTest(stressTestEventCount, stressTestDelay));
+                _logger.Log("Stress test triggered (S key)");
+                StartCoroutine(_testRunner.RunStressTest(stressTestEventCount, stressTestDelay));
             }
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                logger.Log("Error handling test triggered (E key)");
-                StartCoroutine(testRunner.RunErrorHandlingTest());
+                _logger.Log("Error handling test triggered (E key)");
+                StartCoroutine(_testRunner.RunErrorHandlingTest());
             }
         }
 
@@ -143,7 +106,7 @@ namespace Core.Components.Api
         /// </summary>
         public void PostEventFromUI() 
         {
-            StartCoroutine(testRunner.PostTestEvent());
+            StartCoroutine(_testRunner.PostTestEvent());
         }
 
         /// <summary>
@@ -151,7 +114,7 @@ namespace Core.Components.Api
         /// </summary>
         public void GetEventsFromUI() 
         {
-            StartCoroutine(testRunner.GetAllEvents());
+            StartCoroutine(_testRunner.GetAllEvents());
         }
 
         /// <summary>
@@ -159,7 +122,7 @@ namespace Core.Components.Api
         /// </summary>
         public void RunFullTestFromUI() 
         {
-            StartCoroutine(testRunner.RunFullTest(gameEventDto.ToDto()));
+            StartCoroutine(_testRunner.RunFullTest(gameEventDto.ToDto()));
         }
 
         /// <summary>
@@ -167,7 +130,7 @@ namespace Core.Components.Api
         /// </summary>
         public void RunStressTestFromUI()
         {
-            StartCoroutine(testRunner.RunStressTest(stressTestEventCount, stressTestDelay));
+            StartCoroutine(_testRunner.RunStressTest(stressTestEventCount, stressTestDelay));
         }
 
         /// <summary>
@@ -178,7 +141,7 @@ namespace Core.Components.Api
         {
             if (gameDataConfig == null)
             {
-                logger.LogError("No GameDataConfig assigned.");
+                _logger.LogError("No GameDataConfig assigned.");
                 return;
             }
 
@@ -218,13 +181,13 @@ namespace Core.Components.Api
         {
             if (string.IsNullOrEmpty(newBaseUrl))
             {
-                logger.LogError("Cannot update API URL: new URL is null or empty");
+                _logger.LogError("Cannot update API URL: new URL is null or empty");
                 return;
             }
 
             apiConfig.SetBaseUrl(newBaseUrl);
-            logger.Log($"API base URL updated to: {newBaseUrl}");
-            logger.Log($"Events endpoint is now: {apiConfig.EventsUrl}");
+            _logger.Log($"API base URL updated to: {newBaseUrl}");
+            _logger.Log($"Events endpoint is now: {apiConfig.EventsUrl}");
         }
 
         /// <summary>
@@ -235,13 +198,13 @@ namespace Core.Components.Api
         {
             if (string.IsNullOrEmpty(newEndpoint))
             {
-                logger.LogError("Cannot update events endpoint: new endpoint is null or empty");
+                _logger.LogError("Cannot update events endpoint: new endpoint is null or empty");
                 return;
             }
 
             apiConfig.SetEventsEndpoint(newEndpoint);
-            logger.Log($"Events endpoint updated to: {newEndpoint}");
-            logger.Log($"Full events URL is now: {apiConfig.EventsUrl}");
+            _logger.Log($"Events endpoint updated to: {newEndpoint}");
+            _logger.Log($"Full events URL is now: {apiConfig.EventsUrl}");
         }
 
         /// <summary>
@@ -252,12 +215,12 @@ namespace Core.Components.Api
             enableDebugLogs = !enableDebugLogs;
             
             // Reinitialize logger with new setting
-            logger = new UnityConsoleLogger("[EventsAPI]", enableDebugLogs);
-            httpClient = new UnityHttpClient(logger);
-            eventsService = new EventsService(httpClient, apiConfig, logger);
-            testRunner = new ApiTestRunner(eventsService, logger);
+            _logger = new UnityConsoleLogger("[EventsAPI]", enableDebugLogs);
+            _httpClient = new UnityHttpClient(_logger);
+            _eventsService = new EventsService(_httpClient, apiConfig, _logger);
+            _testRunner = new ApiTestRunner(_eventsService, _logger);
             
-            logger.Log($"Debug logging {(enableDebugLogs ? "enabled" : "disabled")}");
+            _logger.Log($"Debug logging {(enableDebugLogs ? "enabled" : "disabled")}");
         }
 
         /// <summary>
@@ -270,7 +233,7 @@ namespace Core.Components.Api
             stressTestEventCount = Mathf.Max(1, eventCount);
             stressTestDelay = Mathf.Max(0f, delay);
             
-            logger.Log($"Stress test settings updated: {stressTestEventCount} events, {stressTestDelay}s delay");
+            _logger.Log($"Stress test settings updated: {stressTestEventCount} events, {stressTestDelay}s delay");
         }
 
         #endregion
@@ -295,16 +258,16 @@ namespace Core.Components.Api
         [ContextMenu("Show Configuration Info")]
         public void ShowConfigurationInfo()
         {
-            logger.Log("=== Current Configuration ===");
-            logger.Log($"Base URL: {apiConfig.BaseUrl}");
-            logger.Log($"Events Endpoint: {apiConfig.EventsEndpoint}");
-            logger.Log($"Full Events URL: {apiConfig.EventsUrl}");
-            logger.Log($"Timeout: {apiConfig.TimeoutSeconds}s");
-            logger.Log($"Debug Logging: {enableDebugLogs}");
-            logger.Log($"Test on Start: {testOnStart}");
-            logger.Log($"Stress Test Count: {stressTestEventCount}");
-            logger.Log($"Stress Test Delay: {stressTestDelay}s");
-            logger.Log("=============================");
+            _logger.Log("=== Current Configuration ===");
+            _logger.Log($"Base URL: {apiConfig.BaseUrl}");
+            _logger.Log($"Events Endpoint: {apiConfig.EventsEndpoint}");
+            _logger.Log($"Full Events URL: {apiConfig.EventsUrl}");
+            _logger.Log($"Timeout: {apiConfig.TimeoutSeconds}s");
+            _logger.Log($"Debug Logging: {enableDebugLogs}");
+            _logger.Log($"Test on Start: {testOnStart}");
+            _logger.Log($"Stress Test Count: {stressTestEventCount}");
+            _logger.Log($"Stress Test Delay: {stressTestDelay}s");
+            _logger.Log("=============================");
         }
 
         /// <summary>
@@ -313,13 +276,13 @@ namespace Core.Components.Api
         [ContextMenu("Show Keyboard Shortcuts")]
         public void ShowKeyboardShortcuts()
         {
-            logger.Log("=== Keyboard Shortcuts ===");
-            logger.Log("P - Post test event");
-            logger.Log("G - Get all events");
-            logger.Log("T - Run full test");
-            logger.Log("S - Run stress test");
-            logger.Log("E - Run error handling test");
-            logger.Log("==========================");
+            _logger.Log("=== Keyboard Shortcuts ===");
+            _logger.Log("P - Post test event");
+            _logger.Log("G - Get all events");
+            _logger.Log("T - Run full test");
+            _logger.Log("S - Run stress test");
+            _logger.Log("E - Run error handling test");
+            _logger.Log("==========================");
         }
 
         #endregion

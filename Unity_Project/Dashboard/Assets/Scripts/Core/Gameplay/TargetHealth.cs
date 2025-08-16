@@ -24,7 +24,7 @@ namespace Core.Gameplay
             if (_currentHealth <= 0)
             {
                 OnDeath?.Invoke();
-                Destroy(gameObject);
+                gameObject.SetActive(false);
             }
         }
     }

@@ -6,7 +6,6 @@ namespace Core.Components.Gameplay
 {
     public class CoroutineRunner : MonoBehaviour, ICoroutineRunner
     {
-
         public Coroutine RunCoroutine(IEnumerator routine)
         {
             return StartCoroutine(routine);

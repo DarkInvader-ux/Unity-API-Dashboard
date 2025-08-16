@@ -439,6 +439,7 @@
 "Assets/Scripts/Core/Components/Gameplay/CoroutineRunner.cs"
 "Assets/Scripts/Core/Components/Gameplay/FPSController.cs"
 "Assets/Scripts/Core/Components/Gameplay/Target.cs"
+"Assets/Scripts/Core/Components/UI/ScoreUIController.cs"
 "Assets/Scripts/Core/Configuration/Api/ApiConfiguration.cs"
 "Assets/Scripts/Core/Controllers/Gameplay/LookController.cs"
 "Assets/Scripts/Core/Controllers/Gameplay/MovementController.cs"
@@ -465,6 +466,7 @@
 "Assets/Scripts/Core/Services/TargetSpawner.cs"
 "Assets/Scripts/Core/Testing/ApiTestRunner.cs"
 "Assets/Scripts/Core/Utilities/GameInstaller.cs"
+"Assets/Scripts/Core/Utilities/TargetPool.cs"
 "Assets/TutorialInfo/Scripts/Readme.cs"
 -langversion:9.0
 /deterministic

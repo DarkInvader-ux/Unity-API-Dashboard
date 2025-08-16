@@ -19,7 +19,7 @@ namespace Core.Services
         public void AddScore(int points)
         {
             Score += points;
-            Debug.Log($"Score: {Score}");
+            Debug.Log("Add score triggered in score manager");
             OnScoreChanged?.Invoke(Score);
         }
     }

@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using Core.Data;
 using Core.Gameplay;
 using Core.Interfaces.Gameplay;
-using Core.Models;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Zenject;

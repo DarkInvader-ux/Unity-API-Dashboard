@@ -1,91 +1,70 @@
 using System;
 using System.Collections;
-using Core.Configuration;
 using Core.Configuration.Api;
 using Core.Data;
 using Core.Interfaces;
 using Core.Interfaces.Api;
 using Core.Models;
 using UnityEngine;
+using Zenject;
 using ILogger = Core.Interfaces.Api.ILogger;
 
 namespace Core.Services.Events
 {
     public class EventsService : IEventsService
     {
-        private readonly IHttpClient httpClient;
-        private readonly ApiConfiguration config;
-        private readonly ILogger logger;
+        private readonly IHttpClient _httpClient;
+        private readonly ApiConfiguration _config;
+        private readonly ILogger _logger;
 
-        /// <summary>
-        /// Creates a new Events service
-        /// </summary>
-        /// <param name="httpClient">HTTP client for making requests</param>
-        /// <param name="config">API configuration</param>
-        /// <param name="logger">Logger for service operations</param>
-        /// <exception cref="ArgumentNullException">Thrown when any parameter is null</exception>
+        [Inject]
         public EventsService(IHttpClient httpClient, ApiConfiguration config, ILogger logger)
         {
-            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            this.config = config ?? throw new ArgumentNullException(nameof(config));
-            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _config = config ?? throw new ArgumentNullException(nameof(config));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
-        /// <summary>
-        /// Posts an event to the API
-        /// </summary>
-        /// <param name="eventName">Name of the event to post</param>
-        /// <returns>Coroutine for async execution</returns>
+        
         public IEnumerator PostEvent(GameEventDto gameEventDto)
         {
             if (gameEventDto == null)
             {
-                logger.LogError("Event data cannot be null");
+                _logger.LogError("Event data cannot be null");
                 yield break;
             }
 
             var request = new HttpRequest<GameEventDto>
             {
-                Url = config.EventsUrl,
+                Url = _config.EventsUrl,
                 Method = HttpMethod.POST,
                 Data = gameEventDto,
                 OnComplete = response => OnEventPosted(gameEventDto.eventType, response),
-                OnError = error => logger.LogError($"Failed to post event '{gameEventDto.eventType}': {error}")
+                OnError = error => _logger.LogError($"Failed to post event '{gameEventDto.eventType}': {error}")
             };
 
-            yield return httpClient.SendRequest(request);
+            yield return _httpClient.SendRequest(request);
         }
 
-        /// <summary>
-        /// Retrieves all events from the API
-        /// </summary>
-        /// <returns>Coroutine for async execution</returns>
         public IEnumerator GetEvents()
         {
             var request = new HttpRequest<object>
             {
-                Url = config.EventsUrl,
+                Url = _config.EventsUrl,
                 Method = HttpMethod.GET,
                 Data = null,
                 OnComplete = OnEventsReceived,
-                OnError = error => logger.LogError($"Failed to get events: {error}")
+                OnError = error => _logger.LogError($"Failed to get events: {error}")
             };
 
-            yield return httpClient.SendRequest(request);
+            yield return _httpClient.SendRequest(request);
         }
 
-        /// <summary>
-        /// Handles successful event posting
-        /// </summary>
         private void OnEventPosted(string eventName, HttpResponse response)
         {
-            logger.LogSuccess($"Event '{eventName}' posted successfully");
-            logger.Log($"Server response: {response.ResponseText}");
+            _logger.LogSuccess($"Event '{eventName}' posted successfully");
+            _logger.Log($"Server response: {response.ResponseText}");
         }
 
-        /// <summary>
-        /// Handles successful events retrieval and parsing
-        /// </summary>
         private void OnEventsReceived(HttpResponse response)
         {
             try
@@ -96,21 +75,21 @@ namespace Core.Services.Events
                 
                 if (eventsResponse?.events != null)
                 {
-                    logger.LogSuccess($"Retrieved {eventsResponse.events.Length} events:");
+                    _logger.LogSuccess($"Retrieved {eventsResponse.events.Length} events:");
                     for (int i = 0; i < eventsResponse.events.Length; i++)
                     {
-                        logger.Log($"  [{i}] {eventsResponse.events[i]}");
+                        _logger.Log($"  [{i}] {eventsResponse.events[i]}");
                     }
                 }
                 else
                 {
-                    logger.Log("No events found or empty response");
+                    _logger.Log("No events found or empty response");
                 }
             }
             catch (Exception e)
             {
-                logger.LogError($"Failed to parse events response: {e.Message}");
-                logger.Log($"Raw response: {response.ResponseText}");
+                _logger.LogError($"Failed to parse events response: {e.Message}");
+                _logger.Log($"Raw response: {response.ResponseText}");
             }
         }
     }
