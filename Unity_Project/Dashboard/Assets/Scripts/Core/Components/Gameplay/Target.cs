@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Core.Data;
+using Core.Gameplay;
 using Core.Interfaces.Gameplay;
 using Core.Models;
 using UnityEngine;
@@ -14,7 +15,9 @@ namespace Core.Components.Gameplay
         [FormerlySerializedAs("gameEventDtoSO")] [FormerlySerializedAs("gameEventDto")] [FormerlySerializedAs("_gameEventDto")] [SerializeField]
         private GameEventDataSo gameEventDtoSo;
         [Inject]
-        private ITargetHitHandler hitHandler;
+        private ITargetHitHandler _hitHandler;
+        
+        private TargetHealth _targetHealth;
 
         public event Action OnDestroyed;
 
@@ -27,6 +30,11 @@ namespace Core.Components.Gameplay
         private void Awake()
         {
             Position = transform.position;
+            _targetHealth = GetComponent<TargetHealth>();
+            if (_targetHealth != null)
+            {
+                _targetHealth.OnDeath += () => OnDestroyed?.Invoke();
+            }
         }
 
         public Vector3 Position { get; set; }
@@ -47,7 +55,10 @@ namespace Core.Components.Gameplay
                 metadata = gameEventDtoSo.MetadataValuesDict
             };
             // Just forwards the hit event to the handler
-            hitHandler.HandleTargetHit(this, updatedEventDto);
+            _hitHandler.HandleTargetHit(this, updatedEventDto);
+            
+            _targetHealth?.ApplyDamage(1);
+
         }
     }
 }

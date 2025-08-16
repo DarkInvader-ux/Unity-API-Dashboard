@@ -35,16 +35,18 @@ namespace Core.Utilities
             Container.Bind<IHttpClient>().To<UnityHttpClient>().AsSingle();
             Container.Bind<ILogger>().To<UnityConsoleLogger>().AsSingle();
             Container.Bind<ApiConfiguration>().AsSingle();
+            Container.Bind<IScoreManager>().To<ScoreManager>().AsSingle();
+            
         }
 
         private void InstallGameplay()
         {
             Container.Bind<TargetSpawnConfig>()
-                .FromScriptableObjectResource("Configs/TargetSpawnConfig") // Put your SO in Resources/Configs
+                .FromScriptableObjectResource("Configs/TargetSpawnConfig") 
                 .AsSingle();
 
             Container.BindFactory<Target, Target.Factory>()
-                .FromComponentInNewPrefabResource("Prefabs/Target"); // Put Target prefab in Resources/Prefabs
+                .FromComponentInNewPrefabResource("Prefabs/Target"); 
             Container.Bind<ITargetHitHandler>().To<TargetHitHandler>().AsSingle();
             Container.BindInterfacesAndSelfTo<TargetSpawner>().AsSingle().NonLazy();
             foreach (var target in FindObjectsOfType<Target>())

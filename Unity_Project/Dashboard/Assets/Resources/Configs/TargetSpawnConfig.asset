@@ -15,5 +15,5 @@ MonoBehaviour:
   spawnInterval: 2
   maxActiveTargets: 5
   areaCenter: {x: 0, y: 0, z: 0}
-  areaSize: {x: 10, y: 10, z: 10}
+  areaSize: {x: 1, y: 5, z: 1}
   targetPrefab: {fileID: 2449497933224846166, guid: e118b60b9741b434085e89b782f90c4c, type: 3}
