@@ -1,0 +1,4 @@
+{
+  "json_file": "../data/events.json",
+  "db_file": "../data/GameEvents.db"
+}

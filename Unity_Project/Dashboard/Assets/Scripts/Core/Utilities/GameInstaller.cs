@@ -5,6 +5,7 @@ using Core.Data;
 using Core.Interfaces;
 using Core.Interfaces.Api;
 using Core.Interfaces.Gameplay;
+using Core.Interfaces.Services;
 using Core.Services;
 using Core.Services.Events;
 using Zenject;
@@ -35,6 +36,8 @@ namespace Core.Utilities
             Container.Bind<IHttpClient>().To<UnityHttpClient>().AsSingle();
             Container.Bind<ILogger>().To<UnityConsoleLogger>().AsSingle();
             Container.Bind<ApiConfiguration>().AsSingle();
+            Container.Bind<IEventPersistenceService>().To<EventPersistenceService>().AsSingle();
+
         }
 
         private void InstallGameplay()
