@@ -43,12 +43,6 @@ This project demonstrates skills in:
 4. Enter Play Mode → interact with the dashboard & gameplay while real data streams in.
 
 ---
-
-## Example Use Case
-- Integrating live **financial/crypto/game event feeds** into a Unity dashboard.  
-- Demonstrating **data pipelines in game engines** for AR/VR or visualization projects.  
-- Teaching ETL + software architecture patterns in Unity context.  
-
 ---
 
 ## Roadmap
