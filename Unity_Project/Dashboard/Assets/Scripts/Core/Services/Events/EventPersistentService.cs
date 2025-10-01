@@ -13,13 +13,11 @@ namespace Core.Services.Events
 
         public EventPersistenceService()
         {
-            // Get project root (Unity project folder)
             string projectRoot = Application.dataPath;  
-            projectRoot = Directory.GetParent(projectRoot)!.FullName; // go up one level from Assets/ to Dashboard/
-            projectRoot = Directory.GetParent(projectRoot)!.FullName; // go up another level from Dashboard/ to Unity_Project/
-            projectRoot = Directory.GetParent(projectRoot)!.FullName; // go up another level from Unity_Project/ to Unity-API-Dashboard/
+            projectRoot = Directory.GetParent(projectRoot)!.FullName; 
+            projectRoot = Directory.GetParent(projectRoot)!.FullName; 
+            projectRoot = Directory.GetParent(projectRoot)!.FullName; 
 
-            // Point to etl/pythonProject/data in the repo root
             string etlDataDirectory = Path.Combine(projectRoot, "etl", "pythonProject", "data");
             _filePath = Path.Combine(etlDataDirectory, "events.json");
 
@@ -27,14 +25,12 @@ namespace Core.Services.Events
 
             Debug.Log($"Events will be saved to: {_filePath}");
 
-            // Ensure the etl/data directory exists
             if (!Directory.Exists(etlDataDirectory))
             {
                 Directory.CreateDirectory(etlDataDirectory);
                 Debug.Log($"Created ETL data directory at: {etlDataDirectory}");
             }
 
-            // Load existing events if file exists
             if (File.Exists(_filePath))
             {
                 try
@@ -72,7 +68,6 @@ namespace Core.Services.Events
 
                 File.WriteAllText(_filePath, json);
                 
-                // Verify file was actually created
                 if (File.Exists(_filePath))
                 {
                     FileInfo fileInfo = new FileInfo(_filePath);
@@ -90,7 +85,6 @@ namespace Core.Services.Events
                 Debug.LogError($"Failed to save event: {ex.Message}");
                 Debug.LogError($"Stack trace: {ex.StackTrace}");
 
-                // Remove the event from cache if save failed
                 if (_cachedEvents.Count > 0)
                 {
                     _cachedEvents.RemoveAt(_cachedEvents.Count - 1);
@@ -98,13 +92,11 @@ namespace Core.Services.Events
             }
         }
 
-        // Method to get the file path for debugging purposes
         public string GetFilePath()
         {
             return _filePath;
         }
 
-        // Method to manually test file writing
         public void TestFileWrite()
         {
             try

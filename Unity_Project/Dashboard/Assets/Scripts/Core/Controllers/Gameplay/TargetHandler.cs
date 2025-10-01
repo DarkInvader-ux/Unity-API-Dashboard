@@ -3,8 +3,6 @@ using Core.Data;
 using Core.Interfaces;
 using Core.Interfaces.Gameplay;
 using Core.Interfaces.Services;
-using Core.Models;
-using ILogger = Core.Interfaces.Api.ILogger;
 using Zenject;
 
 namespace Core.Controllers.Gameplay
